@@ -15,6 +15,11 @@ struct TeamScores {
     goals_conceded: u8,
 }
 
+struct Team<'a> {
+    name: &'a str,
+    score: u8,
+}
+
 fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
     // The name of the team is the key and its associated struct is the value.
     let mut scores = HashMap::<&str, TeamScores>::new();
@@ -31,9 +36,50 @@ fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
         // Keep in mind that goals scored by team 1 will be the number of goals
         // conceded by team 2. Similarly, goals scored by team 2 will be the
         // number of goals conceded by team 1.
+        // let current_score = scores.entry(team_1_name).or_insert(TeamScores {
+        //     goals_scored: 0,
+        //     goals_conceded: 0,
+        // });
+
+        // current_score.goals_scored += team_1_score;
+        // current_score.goals_conceded += team_2_score;
+
+        // let current_score = scores.entry(team_2_name).or_insert(TeamScores {
+        //     goals_scored: 0,
+        //     goals_conceded: 0,
+        // });
+
+        // current_score.goals_scored += team_2_score;
+        // current_score.goals_conceded += team_1_score;
+        let mut team_1 = Team {
+            name: team_1_name,
+            score: team_1_score,
+        };
+
+        let mut team_2 = Team {
+            name: team_2_name,
+            score: team_2_score,
+        };
+
+        add_scores(&mut scores, &mut team_1, &mut team_2);
+        add_scores(&mut scores, &mut team_2, &mut team_1);
     }
 
     scores
+}
+
+fn add_scores<'a>(
+    scores: &mut HashMap<&'a str, TeamScores>,
+    team_1: &mut Team<'a>,
+    team_2: &mut Team,
+) {
+    let current_score = scores.entry(team_1.name).or_insert(TeamScores {
+        goals_scored: 0,
+        goals_conceded: 0,
+    });
+
+    current_score.goals_scored += team_1.score;
+    current_score.goals_conceded += team_2.score;
 }
 
 fn main() {
@@ -54,9 +100,11 @@ England,Spain,1,0";
     fn build_scores() {
         let scores = build_scores_table(RESULTS);
 
-        assert!(["England", "France", "Germany", "Italy", "Poland", "Spain"]
-            .into_iter()
-            .all(|team_name| scores.contains_key(team_name)));
+        assert!(
+            ["England", "France", "Germany", "Italy", "Poland", "Spain"]
+                .into_iter()
+                .all(|team_name| scores.contains_key(team_name))
+        );
     }
 
     #[test]
