@@ -70,7 +70,7 @@ fn main() {
 
     let values = map.values();
 
-    values.filter(|v| **v == Complete);
+    let _ = values.filter(|v| **v == Complete);
 }
 
 #[cfg(test)]
