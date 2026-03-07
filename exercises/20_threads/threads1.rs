@@ -21,9 +21,12 @@ fn main() {
     }
 
     let mut results = Vec::new();
+
     for handle in handles {
         // TODO: Collect the results of all threads into the `results` vector.
         // Use the `JoinHandle` struct which is returned by `thread::spawn`.
+        let sleeping_time = handle.join().unwrap();
+        results.push(sleeping_time);
     }
 
     if results.len() != 10 {
